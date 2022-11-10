@@ -1,4 +1,4 @@
-# flutter_application_1
+# story_view_package
 
 A new Flutter project.
 
