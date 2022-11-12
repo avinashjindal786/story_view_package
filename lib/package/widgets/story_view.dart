@@ -197,6 +197,7 @@ class StoryItem {
     required StoryController controller,
     Key? key,
     Duration? duration,
+    double? aspectRatio,
     BoxFit imageFit = BoxFit.fitWidth,
     String? caption,
     bool shown = false,
@@ -212,6 +213,7 @@ class StoryItem {
                 url,
                 controller: controller,
                 requestHeaders: requestHeaders,
+                aspectRatio: aspectRatio
               ),
               SafeArea(
                 child: Align(

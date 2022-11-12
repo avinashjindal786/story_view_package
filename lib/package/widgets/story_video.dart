@@ -43,13 +43,15 @@ class VideoLoader {
 class StoryVideo extends StatefulWidget {
   final StoryController? storyController;
   final VideoLoader videoLoader;
+  double? aspectRatio;
 
-  StoryVideo(this.videoLoader, {this.storyController, Key? key}) : super(key: key ?? UniqueKey());
+  StoryVideo(this.videoLoader, {this.storyController, this.aspectRatio, Key? key}) : super(key: key ?? UniqueKey());
 
-  static StoryVideo url(String url, {StoryController? controller, Map<String, dynamic>? requestHeaders, Key? key}) {
+  static StoryVideo url(String url, {StoryController? controller, double? aspectRatio, Map<String, dynamic>? requestHeaders, Key? key}) {
     return StoryVideo(
       VideoLoader(url),
       storyController: controller,
+      aspectRatio: aspectRatio,
       key: key,
     );
   }
@@ -64,18 +66,17 @@ class StoryVideoState extends State<StoryVideo> {
   Future<void>? playerLoader;
 
   StreamSubscription? _streamSubscription;
-
+  YoutubePlayerController? youtubePlayerController;
   VideoPlayerController? playerController;
 
   @override
   void initState() {
     super.initState();
 
-    if (widget.videoLoader.url != null) {
-      widget.videoLoader.state = LoadState.success;
-    }
-    // widget.storyController!.pause();
+    widget.storyController!.pause();
 
+    youtubePlayerController = YoutubePlayerController(initialVideoId: widget.videoLoader.url)..addListener(() {});
+    widget.videoLoader.state = LoadState.success;
     //   widget.videoLoader.loadVideo(() {
     //     if (widget.videoLoader.state == LoadState.success) {
     //       this.playerController =
@@ -105,13 +106,18 @@ class StoryVideoState extends State<StoryVideo> {
   Widget getContentView() {
     if (widget.videoLoader.state == LoadState.success) {
       return Center(
-        child: AspectRatio(
-          aspectRatio: 16.0/9.0,
-          child: YoutubePlayer(
-                                  controller: YoutubePlayerController(initialVideoId: widget.videoLoader.url),
-                                  showVideoProgressIndicator: true,
-                                ),
-        ),
+        child: YoutubePlayer(
+          aspectRatio: widget.aspectRatio ?? 16.0 / 9.0,
+          controller: youtubePlayerController!,
+          showVideoProgressIndicator: true,
+            onReady: () {
+            setState(() {
+              widget.storyController!.play();
+              widget.videoLoader.state = LoadState.success;
+            });
+          },
+          ),
+        
       );
     }
 

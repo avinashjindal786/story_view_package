@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/story_view.dart';
+import 'package:story_view_package/story_view.dart';
+
 
 void main() {
   runApp(const MyApp());
